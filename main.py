@@ -38,14 +38,14 @@ def enviar_mensagem(texto):
     except Exception as e:
         print(f"Erro ao enviar mensagem: {e}")
 
-if _name_ == "_main_":
-    print("Iniciando o servidor Web do Render...")
-    server_thread = threading.Thread(target=run_web_server)
-    server_thread.daemon = True
-    server_thread.start()
+# Execução direta sem verificação de traços
+print("Iniciando o servidor Web do Render...")
+server_thread = threading.Thread(target=run_web_server)
+server_thread.daemon = True
+server_thread.start()
 
-    print("Bot de Descontos iniciado no Render...")
-    enviar_mensagem("🚀 <b>Bot de Ofertas Online!</b>\nO robô foi configurado com sucesso e está ativo no Render.")
-    
-    while True:
-        time.sleep(60)
+print("Bot de Descontos iniciado no Render...")
+enviar_mensagem("🚀 <b>Bot de Ofertas Online!</b>\nO robô foi configurado com sucesso e está ativo no Render.")
+
+while True:
+    time.sleep(60)
