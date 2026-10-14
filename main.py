@@ -1,67 +1,45 @@
 import os
 import requests
-import time
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-print("--- INICIANDO BOT DO TELEGRAM ---")
+print("--- INICIANDO SCRIPT COMPLETO ---")
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHANNEL_ID")
 
-if TOKEN:
-    TOKEN = TOKEN.strip()
-if CHAT_ID:
-    CHAT_ID = CHAT_ID.strip()
-
-print(f"DEBUG: CHAT_ID carregado -> '{CHAT_ID}'")
+def enviar_mensagem():
+    if TOKEN and CHAT_ID:
+        url = f"https://api.telegram.org/bot{TOKEN.strip()}/sendMessage"
+        payload = {
+            "chat_id": CHAT_ID.strip(),
+            "text": "🚀 Bot de Ofertas Online ativado com sucesso!"
+        }
+        try:
+            r = requests.post(url, json=payload, timeout=10)
+            print(f"RESPOSTA TELEGRAM: Status {r.status_code} - {r.text}")
+        except Exception as e:
+            print(f"ERRO AO ENVIAR: {e}")
+    else:
+        print("FALTAM VARIAVEIS DE AMBIENTE!")
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        self.send_header("Content-type", "text/html")
         self.end_headers()
-        self.wfile.write(b"Bot ativo!")
+        self.wfile.write(b"Bot ativo e online!")
 
     def do_HEAD(self):
         self.send_response(200)
-        self.send_header("Content-type", "text/html")
         self.end_headers()
 
-def run_web_server():
+def run_server():
     port = int(os.getenv("PORT", 8080))
     server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+    print(f"Servidor HTTP a correr na porta {port}")
     server.serve_forever()
 
-# Inicia servidor em segundo plano
-server_thread = threading.Thread(target=run_web_server)
-server_thread.daemon = True
-server_thread.start()
+# Envia a mensagem logo no arranque, numa thread separada
+threading.Thread(target=enviar_mensagem, daemon=True).start()
 
-time.sleep(2)
-
-def enviar_mensagem_teste():
-    if TOKEN and CHAT_ID:
-        print(f"Enviando mensagem para: {CHAT_ID}...")
-        url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-        payload = {
-            "chat_id": CHAT_ID,
-            "text": "🚀 <b>Bot de Ofertas Online!</b>\nO robô foi configurado com sucesso!",
-            "parse_mode": "HTML"
-        }
-        try:
-            resposta = requests.post(url, json=payload, timeout=10)
-            res_json = resposta.json()
-            print("--- RESPOSTA DO TELEGRAM ---")
-            print(res_json)
-            print("----------------------------")
-        except Exception as e:
-            print(f"Erro na requisição HTTP: {e}")
-    else:
-        print("ERRO: TELEGRAM_BOT_TOKEN ou TELEGRAM_CHANNEL_ID não estão preenchidos no Render!")
-
-# Dispara a mensagem
-enviar_mensagem_teste()
-
-# Mantém o robô rodando
-while True:
-    time.sleep(60)
+# Inicia o servidor web obrigatório para o Render
+run_server()
