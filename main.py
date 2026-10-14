@@ -65,4 +65,3 @@ enviar_mensagem_teste()
 # Mantém o robô rodando
 while True:
     time.sleep(60)
-   
