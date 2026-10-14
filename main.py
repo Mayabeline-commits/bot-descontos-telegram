@@ -4,49 +4,56 @@ import time
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+print("--- INICIANDO BOT DO TELEGRAM ---")
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHANNEL_ID")
+
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
+        self.send_header("Content-type", "text/html")
         self.end_headers()
-        self.wfile.write(b"Bot do Telegram ativo!")
+        self.wfile.write(b"Bot ativo!")
+
+    def do_HEAD(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
 
 def run_web_server():
     port = int(os.getenv("PORT", 8080))
     server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
     server.serve_forever()
 
-def enviar_mensagem():
-    # Aguarda 3 segundos para garantir que o Render carregou as chaves
-    time.sleep(3)
-    
-    token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_id = os.getenv("TELEGRAM_CHANNEL_ID")
-    
-    if not token or not chat_id:
-        print(f"Erro: TOKEN ou CHAT_ID em falta! Token: {token}, Chat ID: {chat_id}")
-        return
-    
-    url = f"https://api.telegram.org/bot{token}/sendMessage"
+# Inicia o servidor web em background para o Render não dar erro de porta
+server_thread = threading.Thread(target=run_web_server)
+server_thread.daemon = True
+server_thread.start()
+
+# Aguarda 2 segundos para o servidor estabilizar
+time.sleep(2)
+
+# Envia a mensagem de teste
+if TOKEN and CHAT_ID:
+    print(f"Tentando enviar mensagem para {CHAT_ID}...")
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     payload = {
-        "chat_id": chat_id,
+        "chat_id": CHAT_ID,
         "text": "🚀 <b>Bot de Ofertas Online!</b>\nO robô foi configurado com sucesso e está ativo no Render.",
         "parse_mode": "HTML"
     }
     try:
         resposta = requests.post(url, data=payload)
-        print("Resposta do Telegram:", resposta.json())
+        res_json = resposta.json()
+        print("Resposta do Telegram:", res_json)
+        if not res_json.get("ok"):
+            print("ERRO DO TELEGRAM:", res_json.get("description"))
     except Exception as e:
-        print(f"Erro ao enviar mensagem: {e}")
+        print(f"Erro na requisição: {e}")
+else:
+    print("ERRO: TELEGRAM_BOT_TOKEN ou TELEGRAM_CHANNEL_ID não configurados!")
 
-if __name__ == "__main__":
-    print("Iniciando o servidor Web do Render...")
-    server_thread = threading.Thread(target=run_web_server)
-    server_thread.daemon = True
-    server_thread.start()
-
-    print("A enviar mensagem de teste para o Telegram...")
-    # Dispara o envio da mensagem num canal separado para não bloquear o servidor
-    threading.Thread(target=enviar_mensagem).daemon = True
-    
-    while True:
-        time.sleep(60)
+# Mantém o processo ativo
+while True:
+    time.sleep(60)
+   
