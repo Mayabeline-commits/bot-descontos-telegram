@@ -1,35 +1,45 @@
 import os
-import asyncio
+import requests
 from flask import Flask
-import telegram
 
-app = Flask(__name__)
+app = Flask(_name_)
 
 @app.route('/')
 def home():
     return "Bot de Descontos ativo!", 200
 
-async def send_welcome():
+def enviar_mensagem_direta():
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
-    if token and channel_id:
-        try:
-            bot = telegram.Bot(token=token)
-            await bot.send_message(
-                chat_id=channel_id,
-                text="🔥 **Radar de Descontos Ativado!** 🔥\n\nO bot está configurado e pronto para postar as melhores ofertas da Shopee e Mercado Livre com os teus links de afiliado!",
-                parse_mode='Markdown'
-            )
-            print("Mensagem enviada com sucesso!")
-        except Exception as e:
-            print(f"Erro Telegram: {e}")
+    
+    print(f"--- INICIANDO ENVIO ---")
+    print(f"Token presente: {bool(token)}")
+    print(f"Channel ID: {channel_id}")
+    
+    if not token or not channel_id:
+        print("ERRO: Variáveis de ambiente ausentes!")
+        return
 
-# Dispara a mensagem assim que o arquivo é carregado pelo Render
-try:
-    asyncio.run(send_welcome())
-except Exception as e:
-    print(f"Erro asyncio: {e}")
+    # Limpa espaços em branco extras se houver
+    token = token.strip()
+    channel_id = channel_id.strip()
 
-if __name__ == "__main__":
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": channel_id,
+        "text": "🔥 Radar de Descontos Ativado! O bot está conectado e pronto para postar ofertas."
+    }
+
+    try:
+        resposta = requests.post(url, data=payload, timeout=10)
+        dados = resposta.json()
+        print(f"RESPOSTA DO TELEGRAM: {dados}")
+    except Exception as e:
+        print(f"ERRO DE CONEXAO: {e}")
+
+# Executa o envio imediatamente ao carregar o arquivo
+enviar_mensagem_direta()
+
+if _name_ == "_main_":
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
