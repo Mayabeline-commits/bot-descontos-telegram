@@ -7,16 +7,14 @@ app = Flask(__name__)
 # LISTA DE OFERTAS
 OFERTAS = [
     {
-        "titulo": "⚡ Fritadeira Elétrica Air Fryer 4L Mercado Livre",
-        "preco_antigo": "R$ 399,00",
-        "preco_promocao": "R$ 249,00",
-        "link": "https://mercadolivre.com/sec/SEU_LINK_MERCADO_LIVRE"
+        "titulo": "⚡ Smart TV 43" Full HD F6000F 2025 Sansung Mercado Livre",
+        "preco_antigo": "R$ 2.299,00",
+        "preco_promocao": "R$ 1.736,27,00",
+        "link": "https://mercadolivre.com/sec/https://meli.la/1LBmQDw"
     },
     {
-        "titulo": "🔥 Fone de Ouvido Bluetooth TWS Shopee",
-        "preco_antigo": "R$ 89,90",
-        "preco_promocao": "R$ 39,90",
-        "link": "https://shope.ee/SEU_LINK_SHOPEE"
+        "titulo": "🔥 
+        "link": "https://https://s.shopee.com.br/9068MoMUT9"
     }
 ]
 @app.route('/')
