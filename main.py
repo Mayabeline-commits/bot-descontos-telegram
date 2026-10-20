@@ -1,45 +1,52 @@
 import os
-import requests
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import asyncio
+from flask import Flask
+from threading import Thread
+import telegram
 
-print("--- INICIANDO SCRIPT COMPLETO ---")
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CHAT_ID = os.getenv("TELEGRAM_CHANNEL_ID")
+# 1. Servidor Web com Flask para manter o Render ativo
+app = Flask(__name__)
 
-def enviar_mensagem():
-    if TOKEN and CHAT_ID:
-        url = f"https://api.telegram.org/bot{TOKEN.strip()}/sendMessage"
-        payload = {
-            "chat_id": CHAT_ID.strip(),
-            "text": "🚀 Bot de Ofertas Online ativado com sucesso!"
-        }
-        try:
-            r = requests.post(url, json=payload, timeout=10)
-            print(f"RESPOSTA TELEGRAM: Status {r.status_code} - {r.text}")
-        except Exception as e:
-            print(f"ERRO AO ENVIAR: {e}")
-    else:
-        print("FALTAM VARIAVEIS DE AMBIENTE!")
+@app.route('/')
+def home():
+    return "Bot de Descontos está online e a funcionar!", 200
 
-class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot ativo e online!")
+def run_flask():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
 
-    def do_HEAD(self):
-        self.send_response(200)
-        self.end_headers()
+# 2. Função para enviar mensagem no Telegram
+async def send_test_message():
+    token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    channel_id = os.environ.get("TELEGRAM_CHANNEL_ID")
+    
+    if not token or not channel_id:
+        print("ERRO: TELEGRAM_BOT_TOKEN ou TELEGRAM_CHANNEL_ID não configurados!")
+        return
 
-def run_server():
-    port = int(os.getenv("PORT", 8080))
-    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
-    print(f"Servidor HTTP a correr na porta {port}")
-    server.serve_forever()
+    bot = telegram.Bot(token=token)
+    
+    mensagem = (
+        "🔥 **Radar de Descontos Ativado!** 🔥\n\n"
+        " O bot está configurado e pronto para postar as melhores ofertas da Shopee e Mercado Livre com os teus links de afiliado!\n\n"
+        "⚡ Acompanha as promoções diárias aqui no canal!"
+    )
+    
+    try:
+        await bot.send_message(chat_id=channel_id, text=mensagem, parse_mode='Markdown')
+        print("Mensagem enviada com sucesso para o canal!")
+    except Exception as e:
+        print(f"Erro ao enviar mensagem para o Telegram: {e}")
 
-# Envia a mensagem logo no arranque, numa thread separada
-threading.Thread(target=enviar_mensagem, daemon=True).start()
-
-# Inicia o servidor web obrigatório para o Render
-run_server()
+# 3. Inicialização Principal
+if __name__ == "__main__":
+    # Inicia o servidor web numa thread separada
+    server_thread = Thread(target=run_flask)
+    server_thread.daemon = True
+    server_thread.start()
+    
+    # Envia a mensagem de teste ao iniciar
+    asyncio.run(send_test_message())
+    
+    # Mantém o processo principal ativo
+    server_thread.join()
