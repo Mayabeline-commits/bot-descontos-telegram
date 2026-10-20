@@ -32,7 +32,10 @@ def enviar_oferta_inicial():
         print("ERRO: Variaveis ausentes")
         return
 
-    oferta = OFERTAS[0]
+    oferta = OFERTAS["titulo": "🔥 NOME DO TEU PRODUTO AQUI",
+        "preco_antigo": "R$ 100,00",
+        "preco_promocao": "R$ 49,90",
+        "link": "https://shope.ee/TEU_LINK_DE_AFILIADO"]
     mensagem = (
         f"{oferta['titulo']}\n\n"
         f"❌ De: {oferta['preco_antigo']}\n"
