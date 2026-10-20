@@ -40,6 +40,6 @@ def enviar_mensagem_direta():
 # Executa o envio imediatamente ao carregar o arquivo
 enviar_mensagem_direta()
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
