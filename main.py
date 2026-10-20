@@ -7,19 +7,18 @@ app = Flask(__name__)
 # LISTA DE OFERTAS
 OFERTAS = [
     {
-        "titulo": "🔥 Fone de Ouvido Bluetooth TWS",
-        "preco_antigo": "R$ 89,90",
-        "preco_promocao": "R$ 39,90",
-        "link": "https://shope.ee/SEU_LINK_DE_AFILIADO_1"
-    },
-    {
-        "titulo": "⚡ Fritadeira Eletrica Air Fryer 4L",
+        "titulo": "⚡ Fritadeira Elétrica Air Fryer 4L Mercado Livre",
         "preco_antigo": "R$ 399,00",
         "preco_promocao": "R$ 249,00",
-        "link": "https://mercadolivre.com/sec/SEU_LINK_DE_AFILIADO_2"
+        "link": "https://mercadolivre.com/sec/SEU_LINK_MERCADO_LIVRE"
+    },
+    {
+        "titulo": "🔥 Fone de Ouvido Bluetooth TWS Shopee",
+        "preco_antigo": "R$ 89,90",
+        "preco_promocao": "R$ 39,90",
+        "link": "https://shope.ee/SEU_LINK_SHOPEE"
     }
 ]
-
 @app.route('/')
 def home():
     return "Bot de Descontos ativo!", 200
