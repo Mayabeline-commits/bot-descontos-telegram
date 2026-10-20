@@ -10,15 +10,13 @@ OFERTAS = [
         "titulo": "🔥 Fone de Ouvido Bluetooth TWS",
         "preco_antigo": "R$ 89,90",
         "preco_promocao": "R$ 39,90",
-        "link": "https://shope.ee/SEU_LINK_DE_AFILIADO_1",
-        "imagem": "https://m.media-amazon.com/images/I/61-+QzZ3pEL._AC_SL1000_.jpg"
+        "link": "https://shope.ee/SEU_LINK_DE_AFILIADO_1"
     },
     {
         "titulo": "⚡ Fritadeira Eletrica Air Fryer 4L",
         "preco_antigo": "R$ 399,00",
         "preco_promocao": "R$ 249,00",
-        "link": "https://mercadolivre.com/sec/SEU_LINK_DE_AFILIADO_2",
-        "imagem": "https://m.media-amazon.com/images/I/61NfIqfJ4tL._AC_SL1000_.jpg"
+        "link": "https://mercadolivre.com/sec/SEU_LINK_DE_AFILIADO_2"
     }
 ]
 
@@ -34,22 +32,25 @@ def enviar_oferta_inicial():
         print("ERRO: Variaveis ausentes")
         return
 
-    oferta = OFERTAS[0]  # Envia a primeira oferta da lista
-    mensagem = f"{oferta['titulo']}\n\n❌ De: {oferta['preco_antigo']}\n✅ Por: *{oferta['preco_promocao']}*\n\n🛒 *Compre aqui:* {oferta['link']}"
+    oferta = OFERTAS[0]
+    mensagem = (
+        f"{oferta['titulo']}\n\n"
+        f"❌ De: {oferta['preco_antigo']}\n"
+        f"✅ Por: {oferta['preco_promocao']}\n\n"
+        f"🛒 Compre aqui: {oferta['link']}"
+    )
 
-    url = f"https://api.telegram.org/bot{token.strip()}/sendPhoto"
+    url = f"https://api.telegram.org/bot{token.strip()}/sendMessage"
     payload = {
         "chat_id": channel_id.strip(),
-        "photo": oferta["imagem"],
-        "caption": mensagem,
-        "parse_mode": "Markdown"
+        "text": mensagem
     }
 
     try:
         res = requests.post(url, data=payload, timeout=10)
         print(f"RESPOSTA DA OFERTA: {res.json()}")
     except Exception as e:
-        print(f"ERRO AO ENVIAR FOTO: {e}")
+        print(f"ERRO AO ENVIAR MENSAGEM: {e}")
 
 # Dispara a oferta IMEDIATAMENTE ao iniciar
 enviar_oferta_inicial()
